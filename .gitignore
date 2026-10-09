@@ -1,0 +1,12 @@
+.DS_Store
+*.bak.*
+.zshrc.local
+.zshrc.env
+__pycache__/
+configs/docker.local.json
+snapshots/
+.ccm_config
+.ccm_accounts
+auth.json
+.credentials.json
+configs/server/*.local.*

@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+set -euo pipefail
+CCM="${HOME}/.local/share/ccm/ccm.sh"
+
+usage() {
+    cat <<EOF2
+Usage: ccc <model> [region|variant] [claude-options]
+       ccc open <provider> [claude-options]
+       ccc <account> [claude-options]        # Switch account then launch (default model)
+       ccc <model>:<account> [claude-options]
+
+Examples:
+  ccc deepseek                     # Launch Claude Code with DeepSeek
+  ccc open kimi                    # Launch with OpenRouter (kimi)
+  ccc kimi --dangerously-skip-permissions  # Pass options to Claude Code
+  ccc work                     # Switch to 'work' account and launch
+  ccc claude:work                  # Switch to 'work' account and use Claude
+
+Available models:
+  Official: deepseek, glm, kimi, qwen, seed|doubao, claude, minimax
+  OpenRouter: open <provider>
+  Account:  <account> | claude:<account>
+EOF2
+}
+
+if [[ ! -f "$CCM" ]]; then
+    echo "ccc error: cannot find ccm CLI at $CCM" >&2
+    exit 1
+fi
+
+if [[ $# -lt 1 ]]; then
+    usage
+    exit 1
+fi
+
+model=""
+open_provider=""
+region_arg=""
+seed_variant=""
+account=""
+
+if [[ "${1:-}" == "open" ]]; then
+    shift || true
+    if [[ $# -lt 1 ]]; then
+        usage
+        exit 1
+    fi
+    model="open"
+    open_provider="$1"
+    shift || true
+else
+    model="$1"
+    shift || true
+fi
+
+is_known_model() {
+    case "$1" in
+        deepseek|ds|glm|glm5|kimi|kimi2|qwen|minimax|mm|seed|doubao|claude|sonnet|s|open)
+            return 0 ;;
+        *)
+            return 1 ;;
+    esac
+}
+
+if [[ "$model" != "open" ]] && [[ "$model" != *:* ]] && ! is_known_model "$model" && [[ ! "$model" =~ ^- ]]; then
+    account="$model"
+    if ! "$CCM" switch-account "$account"; then
+        echo "❌ Failed to switch account: $account" >&2
+        exit 1
+    fi
+    "$CCM" current-account || true
+    eval "$("$CCM" claude)"
+else
+    if [[ "$model" == "open" ]]; then
+        eval "$("$CCM" open "$open_provider")"
+    else
+        case "$model" in
+            kimi|kimi2|qwen|glm|glm5|minimax|mm)
+                if [[ "${1:-}" =~ ^(global|china|cn)$ ]]; then
+                    region_arg="$1"
+                    shift || true
+                fi
+                ;;
+            seed|doubao)
+                if [[ "${1:-}" =~ ^(doubao|glm|glm5|deepseek|ds|kimi|kimi2)$ ]]; then
+                    seed_variant="$1"
+                    shift || true
+                fi
+                ;;
+        esac
+
+        if [[ -n "$seed_variant" ]]; then
+            eval "$("$CCM" "$model" "$seed_variant")"
+        elif [[ -n "$region_arg" ]]; then
+            eval "$("$CCM" "$model" "$region_arg")"
+        else
+            eval "$("$CCM" "$model")"
+        fi
+    fi
+fi
+
+claude_args=("$@")
+
+echo ""
+echo "🚀 Launching Claude Code..."
+echo "   Model: ${ANTHROPIC_MODEL:-'(unset)'}"
+echo "   Base URL: ${ANTHROPIC_BASE_URL:-'Default (Anthropic)'}"
+
+if ! command -v claude >/dev/null 2>&1; then
+    echo "❌ 'claude' CLI not found. Install it first: npm install -g @anthropic-ai/claude-code" >&2
+    exit 127
+fi
+
+if [[ ${#claude_args[@]} -eq 0 ]]; then
+    exec claude
+else
+    exec claude "${claude_args[@]}"
+fi

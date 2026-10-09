@@ -1,0 +1,7 @@
+# Portable preferences; credentials and project trust are configured locally.
+model = "gpt-6-astra"
+model_reasoning_effort = "xhigh"
+personality = "pragmatic"
+model_context_window = 500000
+model_auto_compact_token_limit = 450000
+service_tier = "default"

@@ -1,0 +1,6 @@
+{
+  "docker-apt-base": "https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux",
+  "registry-mirrors": [
+    "https://docker.1panel.live"
+  ]
+}

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+CCM_SH="${HOME}/.local/share/ccm/ccm.sh"
+if [[ ! -f "$CCM_SH" ]]; then
+  echo "ccm error: missing $CCM_SH" >&2
+  exit 1
+fi
+exec "$CCM_SH" "$@"

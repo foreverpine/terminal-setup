@@ -1,0 +1,15 @@
+{
+  "node": "24.16.0",
+  "fnm": "1.39.0",
+  "uv": "0.9.17",
+  "zellij": "0.44.3",
+  "npm": {
+    "pnpm": {"package": "pnpm", "version": "11.21.0"},
+    "claude": {"package": "@anthropic-ai/claude-code", "version": "2.1.161"},
+    "codex": {"package": "@openai/codex", "version": "0.159.0"},
+    "opencode": {"package": "opencode-ai", "version": "1.18.23"},
+    "dsh": {"package": "@deepseek-ai/dsh", "version": "0.1.0-rc.6"},
+    "agently-cli": {"package": "@tencent-qqmail/agently-cli", "version": "1.0.5"}
+  },
+  "custom_commands": ["ccm", "ccc"]
+}

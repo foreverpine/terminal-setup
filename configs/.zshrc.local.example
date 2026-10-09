@@ -1,0 +1,18 @@
+# ~/.zshrc.local.example — copy to ~/.zshrc.local and customize per machine.
+#
+# ~/.zshrc.local is sourced by ~/.zshrc just before zsh-syntax-highlighting.
+# It is NOT version-controlled: this is where machine-specific and personal
+# config belongs — personal functions, aliases and ZLE widgets.
+# Put proxy, PATH and tool environment in ~/.zshrc.env so initializers see them.
+# Keep this .example free of real secrets/domains.
+#
+# ⚠ Load-order invariant: zsh-syntax-highlighting must remain the LAST thing
+#   loaded in ~/.zshrc (it wraps ZLE widgets created by compinit / zle -N /
+#   plugins). The main .zshrc loads it after this file automatically.
+
+# ─── Optional server runtime (only when installed) ──────────────────
+# [[ -r "$HOME/miniconda3/etc/profile.d/conda.sh" ]] && \
+#     source "$HOME/miniconda3/etc/profile.d/conda.sh"
+
+# ─── Personal functions / aliases ───────────────────────────────────
+# mytool() { echo "do something"; }
